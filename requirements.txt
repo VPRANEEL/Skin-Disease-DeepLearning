@@ -1,3 +1,5 @@
 streamlit
 pandas
+tensor-flow
+numoy
 scikit-learn
