@@ -1,5 +1,6 @@
 streamlit
 pandas
-tensor-flow
+tensorflow
 numoy
 scikit-learn
+
