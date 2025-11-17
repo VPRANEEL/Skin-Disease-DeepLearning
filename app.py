@@ -1,0 +1,75 @@
+
+#  Streamlit Skin Disease analyzer
+
+
+import streamlit as st
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+from tensorflow.keras.applications import EfficientNetB0
+from tensorflow.keras import layers, models
+from tensorflow.keras.optimizers import AdamW
+from sklearn.preprocessing import LabelEncoder
+import os
+
+
+# Configurationstrea
+
+IMG_SIZE = (224, 224)
+MODEL_PATH = "skin_disease_model.keras"  # Path to your trained model
+LABELS = sorted(os.listdir(r"C:\Users\Asus\OneDrive\Desktop\Skin_disease\skin_disease_dataset\skin-disease-datasaet\train_set"))  # Folder names as labels
+
+
+# Load Model
+
+@st.cache_resource
+def load_trained_model():
+    model = tf.keras.models.load_model(MODEL_PATH)
+    return model
+
+model = load_trained_model()
+
+
+# Streamlit UI
+
+st.set_page_config(page_title="Skin Disease Classifier", page_icon="🩺", layout="centered")
+
+st.title("Skin Disease Analyzer Using Deep Learning")
+st.write("Upload a skin image to predict the disease")
+
+st.sidebar.subheader("Instructions :")
+st.sidebar.write("1. Upload an Image with good resolution and intensity")
+st.sidebar.write("2. Click on upload")
+
+uploaded_file = st.file_uploader("Upload a skin image (JPG/PNG)", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    # Load and preprocess image
+    img = Image.open(uploaded_file).convert("RGB").resize(IMG_SIZE)
+    img_array = np.array(img, dtype=np.float32) / 255.0
+    img_batch = np.expand_dims(img_array, axis=0)
+
+    st.image(img, caption="Uploaded Image", use_container_width=True)
+
+    # Predict
+    with st.spinner("🔍 Analyzing image..."):
+        preds = model.predict(img_batch)
+        confidence = np.max(preds) * 100
+        pred_label = LABELS[np.argmax(preds)]
+
+    # Confidence Check
+
+    if confidence < 40:
+        st.warning(f"⚠️ Image quality seems low. (Confidence: {confidence:.2f}%)")
+        st.info("Please upload a clearer image for better prediction.")
+    else:
+        st.success(f"✅ Predicted Disease: **{pred_label}**")
+        st.write(f"**Model Confidence:** {confidence:.2f}%")
+
+    # Optional: show prediction probabilities
+    st.subheader("📊 Prediction Probabilities")
+    prob_dict = {LABELS[i]: float(preds[0][i]*100) for i in range(len(LABELS))}
+    st.bar_chart(prob_dict)
+
+else:
+    st.info("⬆️ Please upload an image to start prediction.")
