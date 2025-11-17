@@ -14,7 +14,7 @@ import os
 
 
 # Configurationstrea
-
+IMG_SIZE = (224, 224)
 MODEL_PATH = "skin_disease_model.h5"  # Path to your trained model
 
 # Load Model
@@ -64,5 +64,6 @@ if uploaded_file is not None:
         st.write(f"**Model Confidence:** {confidence:.2f}%")
 else:
     st.info("⬆️ Please upload an image to start prediction.")
+
 
 
