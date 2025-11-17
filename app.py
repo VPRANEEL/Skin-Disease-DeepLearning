@@ -15,10 +15,7 @@ import os
 
 # Configurationstrea
 
-IMG_SIZE = (224, 224)
 MODEL_PATH = "skin_disease_model.keras"  # Path to your trained model
-LABELS = sorted(os.listdir(r"C:\Users\Asus\OneDrive\Desktop\Skin_disease\skin_disease_dataset\skin-disease-datasaet\train_set"))  # Folder names as labels
-
 
 # Load Model
 
@@ -65,11 +62,6 @@ if uploaded_file is not None:
     else:
         st.success(f"✅ Predicted Disease: **{pred_label}**")
         st.write(f"**Model Confidence:** {confidence:.2f}%")
-
-    # Optional: show prediction probabilities
-    st.subheader("📊 Prediction Probabilities")
-    prob_dict = {LABELS[i]: float(preds[0][i]*100) for i in range(len(LABELS))}
-    st.bar_chart(prob_dict)
-
 else:
     st.info("⬆️ Please upload an image to start prediction.")
+
